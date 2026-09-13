@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ตารางเรียนสองภาษา ไทย-จีน สำหรับ BRTCM 2026">
+  <title>My Class Schedule — BRTCM 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#">
+      <span class="brand-mark">课</span>
+      <span>
+        <strong>MY CLASS</strong>
+        <small>BRTCM · 2026</small>
+      </span>
+    </a>
+
+    <nav>
+      <a href="#schedule" data-i18n="navSchedule">ตารางเรียน</a>
+      <a href="#courses" data-i18n="navCourses">รายวิชา</a>
+      <a href="#about" data-i18n="navAbout">ข้อมูล</a>
+    </nav>
+
+    <div class="top-actions">
+      <button class="lang-btn active" data-lang="th">TH</button>
+      <button class="lang-btn" data-lang="zh">中</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-image-wrap">
+        <img id="heroImage" src="" alt="รูปภาพประจำตารางเรียน" class="hero-image hidden">
+        <div class="hero-placeholder" id="heroPlaceholder">
+          <div class="placeholder-icon">＋</div>
+          <div>
+            <strong data-i18n="addImage">เพิ่มรูปภาพ</strong>
+            <span data-i18n="addImageHint">เลือกภาพจากเครื่องของคุณได้</span>
+          </div>
+        </div>
+        <label class="upload-button" for="imageInput">
+          <span>＋</span> <span data-i18n="uploadImage">ใส่รูปภาพ</span>
+        </label>
+        <input id="imageInput" type="file" accept="image/*" hidden>
+      </div>
+
+      <div class="hero-content">
+        <span class="eyebrow" data-i18n="eyebrow">CLASS SCHEDULE · 2026</span>
+        <h1><span data-i18n="heroTitle">ตารางเรียน</span><br><em>BRTCM</em></h1>
+        <p data-i18n="heroDesc">ตารางเรียนสองภาษา ไทย–จีน ที่ออกแบบให้ดูง่าย ค้นหาวิชาและเช็กคาบเรียนได้อย่างรวดเร็ว</p>
+        <div class="hero-actions">
+          <a class="primary-btn" href="#schedule" data-i18n="viewSchedule">ดูตารางเรียน</a>
+          <button class="secondary-btn" id="clearImage" data-i18n="removeImage">ลบรูปภาพ</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="intro" id="about">
+      <div>
+        <span class="section-kicker" data-i18n="quickInfo">QUICK INFO</span>
+        <h2 data-i18n="introTitle">จัดตารางเรียนให้เข้าใจง่ายในหน้าเดียว</h2>
+        <p data-i18n="introDesc">เลือกสัปดาห์เพื่อดูเฉพาะวิชาที่มีเรียนในสัปดาห์นั้น หรือเลือก “ทั้งหมด” เพื่อดูภาพรวมทั้งภาคการศึกษา</p>
+      </div>
+
+      <div class="stats">
+        <div class="stat-card"><b id="courseCount">0</b><span data-i18n="statCourses">รายวิชา</span></div>
+        <div class="stat-card"><b>17</b><span data-i18n="statWeeks">สัปดาห์สูงสุด</span></div>
+        <div class="stat-card"><b>3</b><span data-i18n="statPeriods">ช่วงเวลา</span></div>
+      </div>
+    </section>
+
+    <section class="schedule-section" id="schedule">
+      <div class="section-heading">
+        <div>
+          <span class="section-kicker">WEEKLY VIEW</span>
+          <h2 data-i18n="scheduleTitle">ตารางเรียนรายสัปดาห์</h2>
+        </div>
+        <div class="controls">
+          <label>
+            <span data-i18n="weekLabel">สัปดาห์</span>
+            <select id="weekSelect">
+              <option value="all" data-i18n="allWeeks">ทั้งหมด</option>
+            </select>
+          </label>
+          <label>
+            <span data-i18n="dayLabel">วัน</span>
+            <select id="daySelect">
+              <option value="all" data-i18n="allDays">ทุกวัน</option>
+              <option value="mon">จันทร์ / 星期一</option>
+              <option value="tue">อังคาร / 星期二</option>
+              <option value="wed">พุธ / 星期三</option>
+              <option value="thu">พฤหัสบดี / 星期四</option>
+              <option value="fri">ศุกร์ / 星期五</option>
+              <option value="sat">เสาร์ / 星期六</option>
+              <option value="sun">อาทิตย์ / 星期天</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <div id="weekNote" class="week-note"></div>
+      <div id="scheduleGrid" class="schedule-grid"></div>
+    </section>
+
+    <section class="courses-section" id="courses">
+      <div class="section-heading">
+        <div>
+          <span class="section-kicker">COURSES</span>
+          <h2 data-i18n="coursesTitle">รายวิชาทั้งหมด</h2>
+        </div>
+      </div>
+      <div id="courseList" class="course-list"></div>
+    </section>
+
+    <section class="howto">
+      <div class="howto-card">
+        <span class="section-kicker">HOW TO USE</span>
+        <h2 data-i18n="howTitle">ใช้งานง่าย 1–2–3</h2>
+        <div class="steps">
+          <div><b>01</b><strong data-i18n="step1Title">เลือกสัปดาห์</strong><span data-i18n="step1Desc">ระบบจะแสดงเฉพาะคาบที่มีเรียน</span></div>
+          <div><b>02</b><strong data-i18n="step2Title">ดูวันและคาบ</strong><span data-i18n="step2Desc">แยกช่วงเช้า บ่าย และเย็นชัดเจน</span></div>
+          <div><b>03</b><strong data-i18n="step3Title">ใส่รูปของคุณ</strong><span data-i18n="step3Desc">เลือกรูปจากเครื่องเพื่อเปลี่ยนภาพด้านบน</span></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>MY CLASS · BRTCM 2026</span>
+    <span data-i18n="footer">แก้ไขข้อมูลได้จากไฟล์ schedule.js</span>
+  </footer>
+
+  <script src="schedule.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

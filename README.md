@@ -1,65 +1,54 @@
-# BRTCM 2026 — Thai / Chinese Class Schedule
+# BRTCM 2026 Class Schedule — Futuristic Red
 
-เว็บไซต์ Prototype ตารางเรียนสองภาษา โดยแยกเป็น HTML / CSS / JavaScript เพื่อแก้ไขง่ายใน Visual Studio Code
+เว็บไซต์ตารางเรียน BRTCM 2026 แบบแยกสัปดาห์ 1–17 พร้อมเวลา คาบ ห้อง และผู้สอน
 
 ## ไฟล์
 - `index.html` — โครงสร้างหน้าเว็บ
-- `style.css` — สี ฟอนต์ ระยะห่าง และ Responsive
-- `schedule.js` — ข้อมูลตารางเรียน แก้ชื่อวิชา อาจารย์ สัปดาห์ คาบ และห้องที่นี่
-- `script.js` — ระบบเลือกสัปดาห์/วัน, สลับภาษา, และอัปโหลดรูป
+- `style.css` — ดีไซน์สีแดง Minimal / Futuristic
+- `schedule.js` — ข้อมูลตารางเรียนและเวลา
+- `script.js` — ระบบเลือกสัปดาห์ / ภาษา / อัปโหลดภาพ
 - `README.md` — คู่มือนี้
 
-## วิธีเปิดใน Visual Studio Code
-1. แตก ZIP
-2. เปิดโฟลเดอร์ `class-schedule-website` ใน Visual Studio Code
-3. เปิด `index.html`
-4. แนะนำให้ติดตั้งส่วนขยาย **Live Server**
-5. คลิกขวา `index.html` → **Open with Live Server**
+## เปิดใน VS Code
+แนะนำติดตั้ง Extension ชื่อ **Live Server**
+1. เปิดโฟลเดอร์นี้ใน VS Code
+2. เปิด `index.html`
+3. กด **Go Live** มุมขวาล่าง
+4. เว็บจะเปิดที่ `http://127.0.0.1:5500`
 
-ไม่ต้องติดตั้ง Node.js และไม่ต้องมีฐานข้อมูลสำหรับ Prototype นี้
+## แก้ข้อมูลตาราง
+แก้ที่ `schedule.js` เท่านั้น
 
-## วิธีเปลี่ยนข้อมูลตารางเรียน
-เปิด `schedule.js` แล้วแก้ข้อมูล เช่น
-
+ตัวอย่าง:
 ```js
 {
   day:"mon",
   period:"morning",
-  th:"ภาษาจีนขั้นสูง (III)",
-  zh:"高级汉语（Ⅲ）",
-  teacher:"闻齐家",
+  th:"ชื่อวิชาภาษาไทย",
+  zh:"中文课程名称",
+  teacher:"ชื่อผู้สอน",
   weeks:"5-16",
   periods:"2-4",
   room:"南6A502"
 }
 ```
 
-ค่า `day`: `mon`, `tue`, `wed`, `thu`, `fri`, `sat`, `sun`
+เวลาใช้ตาม `periods` ที่กำหนดใน `timeMap` ด้านบนของ `schedule.js`
 
-ค่า `period`: `morning`, `afternoon`, `evening`
+## อัปเดต GitHub Pages
+เมื่อแก้ไฟล์แล้ว:
+1. เข้า Repository `BRTCM-Class-Schedule`
+2. กด **Add file → Upload files**
+3. ลาก `index.html`, `style.css`, `schedule.js`, `script.js` และไฟล์อื่นที่ต้องการขึ้นไป
+4. เลือก **Commit directly to the main branch**
+5. กด **Commit changes**
+6. ไปที่ **Settings → Pages**
+7. ตรวจสอบว่า Source = **Deploy from a branch**
+8. Branch = **main**
+9. Folder = **/(root)**
+10. รอ GitHub Pages deploy แล้วเปิดหน้าเว็บ
 
-## วิธีใส่รูป
-กด **ใส่รูปภาพ** บนหน้าเว็บ แล้วเลือกรูปจากคอมพิวเตอร์ รูปจะถูกจำไว้ใน browser เครื่องนั้นด้วย Local Storage
+สำคัญ: `index.html` ต้องอยู่ที่ root ของ repository ไม่ควรอยู่ในโฟลเดอร์ย่อย ถ้า Pages ตั้งเป็น `main / (root)`
 
-หมายเหตุ: รูปที่ผู้ใช้เลือกจากเครื่อง **ไม่ได้ถูกอัปโหลดขึ้นเซิร์ฟเวอร์** ดังนั้นถ้าจะให้คนอื่นเห็นรูปเดียวกันบนเว็บไซต์จริง ควรใส่ไฟล์รูปไว้ในโฟลเดอร์โปรเจกต์แล้วกำหนด `src="images/ชื่อรูป.jpg"` ใน `index.html` แทน
-
-## วิธีเอาขึ้นเว็บให้คนอื่นเปิดได้
-
-### วิธีที่ 1 — GitHub Pages (แนะนำสำหรับ Prototype)
-1. สมัคร/เข้าสู่ GitHub
-2. สร้าง Repository ใหม่ เช่น `brtcm-class-schedule`
-3. อัปโหลด `index.html`, `style.css`, `schedule.js`, `script.js`
-4. ไปที่ **Settings → Pages**
-5. เลือก **Deploy from a branch**
-6. เลือก branch `main` และ folder `/root`
-7. Save
-8. รอสักครู่ แล้ว GitHub จะให้ลิงก์เว็บไซต์
-
-### วิธีที่ 2 — Netlify
-1. เข้า Netlify
-2. สร้าง site ใหม่
-3. ลากโฟลเดอร์โปรเจกต์ขึ้นไป
-4. ระบบจะสร้าง URL ให้ทันที
-
-## ถ้าต้องการแก้บนเว็บจริงภายหลัง
-Prototype นี้เป็น Static Website จึงเหมาะกับงานนำเสนอ/ฝึกงาน หากต้องการให้ผู้ดูแลสามารถล็อกอินแล้วเพิ่ม/แก้ตารางจากหน้าเว็บได้จริง จะต้องเพิ่ม Backend + Database หรือใช้บริการจัดเก็บข้อมูลเพิ่มเติม
+## หมายเหตุเรื่องภาพ
+ปุ่มภาพด้านบนสามารถเลือกภาพจากเครื่องเพื่อแสดงบนเครื่องนั้นได้ทันที แต่ถ้าต้องการให้คนอื่นเห็นภาพเดียวกันบน GitHub Pages ให้ใส่ภาพไว้ใน repository เช่น `assets/hero.jpg` แล้วแก้ HTML/CSS ให้เรียกไฟล์นั้น

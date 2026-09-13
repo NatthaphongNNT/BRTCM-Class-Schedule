@@ -1,155 +1,151 @@
+let currentWeek = 1;
 let currentLang = "th";
-let selectedWeek = "all";
-let selectedDay = "all";
 
-const $ = (s) => document.querySelector(s);
-const $$ = (s) => [...document.querySelectorAll(s)];
+const icons = {
+  clock: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3.2 2"/></svg>',
+  user: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3"/><path d="M5.5 19c.8-3.1 3-4.7 6.5-4.7s5.7 1.6 6.5 4.7"/></svg>',
+  pin: '<svg viewBox="0 0 24 24"><path d="M18 10c0 4.2-6 10-6 10S6 14.2 6 10a6 6 0 1 1 12 0Z"/><circle cx="12" cy="10" r="2"/></svg>',
+  layers: '<svg viewBox="0 0 24 24"><path d="m12 4 8 4-8 4-8-4 8-4Z"/><path d="m4 12 8 4 8-4"/><path d="m4 16 8 4 8-4"/></svg>',
+  image: '<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><circle cx="9" cy="10" r="1.3"/><path d="m5 17 4.5-4 3.2 2.6 2.3-2.1L19 17"/></svg>'
+};
 
-function expandWeeks(text){
+function parseWeeks(str) {
   const out = new Set();
-  text.replace(/\s/g,"").split(",").forEach(part=>{
-    if(!part) return;
-    if(part.includes("-")){
+  str.replace(/\s/g, "").split(",").forEach(part => {
+    if (!part) return;
+    if (part.includes("-")) {
       const [a,b] = part.split("-").map(Number);
       for(let i=a;i<=b;i++) out.add(i);
-    }else{
+    } else {
       out.add(Number(part));
     }
   });
-  return [...out].filter(Boolean);
+  return [...out].filter(Boolean).sort((a,b)=>a-b);
 }
-function hasWeek(item, week){
-  return week === "all" || expandWeeks(item.weeks).includes(Number(week));
+
+function weekHas(item, week){ return parseWeeks(item.weeks).includes(week); }
+
+function getTime(periods){
+  return timeMap[periods] || "ดูตามคาบ " + periods;
 }
-function uniqueCourses(){
-  const map = new Map();
-  scheduleData.forEach(x=>{
-    const key=x.zh;
-    if(!map.has(key)) map.set(key,x);
+
+function countForWeek(week){
+  return scheduleData.filter(x => weekHas(x, week)).length;
+}
+
+function uniqueSubjects(week){
+  return new Set(scheduleData.filter(x=>weekHas(x,week)).map(x=>x.zh)).size;
+}
+
+function renderIcon(name){
+  return icons[name] || "";
+}
+
+function renderStats(){
+  const stats = document.getElementById("stats");
+  const count = countForWeek(currentWeek);
+  const subjects = uniqueSubjects(currentWeek);
+  const days = new Set(scheduleData.filter(x=>weekHas(x,currentWeek)).map(x=>x.day)).size;
+  const total = scheduleData.length;
+  stats.innerHTML = `
+    <div class="stat"><div class="num">${count}</div><div class="label">รายการเรียนในสัปดาห์นี้</div></div>
+    <div class="stat"><div class="num">${subjects}</div><div class="label">รายวิชา</div></div>
+    <div class="stat"><div class="num">${days}</div><div class="label">วันที่มีเรียน</div></div>
+    <div class="stat"><div class="num">${total}</div><div class="label">รายการทั้งหมดในหลักสูตร</div></div>
+  `;
+}
+
+function renderWeeks(){
+  const tabs = document.getElementById("weekTabs");
+  tabs.innerHTML = Array.from({length:17},(_,i)=>i+1).map(w=>`
+    <button class="week-tab ${w===currentWeek?'active':''}" data-week="${w}">
+      <div class="w">W${String(w).padStart(2,"0")}</div>
+      <div class="count">${countForWeek(w)} รายการ</div>
+    </button>
+  `).join("");
+  tabs.querySelectorAll(".week-tab").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      currentWeek=Number(btn.dataset.week);
+      renderAll();
+      window.scrollTo({top:document.querySelector(".schedule-section").offsetTop-95,behavior:"smooth"});
+    });
   });
-  return [...map.values()];
 }
-function i18nText(key){
-  const dict = {
-    th:{
-      navSchedule:"ตารางเรียน",navCourses:"รายวิชา",navAbout:"ข้อมูล",addImage:"เพิ่มรูปภาพ",
-      addImageHint:"เลือกภาพจากเครื่องของคุณได้",uploadImage:"ใส่รูปภาพ",removeImage:"ลบรูปภาพ",
-      eyebrow:"CLASS SCHEDULE · 2026",heroTitle:"ตารางเรียน",heroDesc:"ตารางเรียนสองภาษา ไทย–จีน ที่ออกแบบให้ดูง่าย ค้นหาวิชาและเช็กคาบเรียนได้อย่างรวดเร็ว",
-      viewSchedule:"ดูตารางเรียน",quickInfo:"QUICK INFO",introTitle:"จัดตารางเรียนให้เข้าใจง่ายในหน้าเดียว",
-      introDesc:"เลือกสัปดาห์เพื่อดูเฉพาะวิชาที่มีเรียนในสัปดาห์นั้น หรือเลือก “ทั้งหมด” เพื่อดูภาพรวมทั้งภาคการศึกษา",
-      statCourses:"รายวิชา",statWeeks:"สัปดาห์สูงสุด",statPeriods:"ช่วงเวลา",weekLabel:"สัปดาห์",dayLabel:"วัน",
-      allWeeks:"ทั้งหมด",allDays:"ทุกวัน",scheduleTitle:"ตารางเรียนรายสัปดาห์",coursesTitle:"รายวิชาทั้งหมด",
-      howTitle:"ใช้งานง่าย 1–2–3",step1Title:"เลือกสัปดาห์",step1Desc:"ระบบจะแสดงเฉพาะคาบที่มีเรียน",
-      step2Title:"ดูวันและคาบ",step2Desc:"แยกช่วงเช้า บ่าย และเย็นชัดเจน",step3Title:"ใส่รูปของคุณ",step3Desc:"เลือกรูปจากเครื่องเพื่อเปลี่ยนภาพด้านบน",
-      footer:"แก้ไขข้อมูลได้จากไฟล์ schedule.js"
-    },
-    zh:{
-      navSchedule:"课程表",navCourses:"课程",navAbout:"信息",addImage:"添加图片",
-      addImageHint:"从你的设备选择图片",uploadImage:"上传图片",removeImage:"删除图片",
-      eyebrow:"CLASS SCHEDULE · 2026",heroTitle:"课程表",heroDesc:"泰语–中文双语课程表，清晰查看课程、星期和节次。",
-      viewSchedule:"查看课程表",quickInfo:"QUICK INFO",introTitle:"把课程安排放在一个页面里",
-      introDesc:"选择周数只显示当周课程，也可以选择“全部”查看整个学期。",
-      statCourses:"门课程",statWeeks:"最多周数",statPeriods:"时间段",weekLabel:"周",dayLabel:"星期",
-      allWeeks:"全部",allDays:"所有星期",scheduleTitle:"每周课程表",coursesTitle:"全部课程",
-      howTitle:"简单三步",step1Title:"选择周数",step1Desc:"只显示该周有课的时间",
-      step2Title:"查看星期和节次",step2Desc:"上午、下午、晚上清晰分开",step3Title:"添加你的图片",step3Desc:"从设备选择图片替换顶部主图",
-      footer:"可在 schedule.js 文件中修改课程资料"
-    }
-  };
-  return dict[currentLang][key] || key;
+
+function courseCard(item){
+  const title = currentLang==="th" ? item.th : item.zh;
+  const secondary = currentLang==="th" ? item.zh : item.th;
+  return `
+    <article class="course">
+      <div class="course-time">${renderIcon("clock")} ${getTime(item.periods)}</div>
+      <div class="course-title">${title}</div>
+      <div class="course-zh">${secondary}</div>
+      <div class="course-meta">
+        <div class="meta">${renderIcon("layers")} <span>คาบ ${item.periods}</span></div>
+        ${item.teacher ? `<div class="meta">${renderIcon("user")} <span>${item.teacher}</span></div>` : ""}
+        <div class="meta">${renderIcon("pin")} <span>${item.room}</span></div>
+      </div>
+    </article>
+  `;
 }
-function applyLanguage(){
-  $$("[data-i18n]").forEach(el=>el.textContent=i18nText(el.dataset.i18n));
-  document.documentElement.lang=currentLang==="th"?"th":"zh";
-  $$(".lang-btn").forEach(b=>b.classList.toggle("active",b.dataset.lang===currentLang));
-  render();
+
+function renderSchedule(){
+  const root=document.getElementById("scheduleRoot");
+  const days=Object.keys(dayInfo);
+  const periods=["morning","afternoon","evening"];
+  root.innerHTML = `<div class="day-grid">${
+    days.map(day=>{
+      const dayItems=scheduleData.filter(x=>x.day===day && weekHas(x,currentWeek));
+      return `
+        <section class="day-column">
+          <header class="day-head">
+            <div class="day-name">${dayInfo[day].th}</div>
+            <div class="day-zh">${dayInfo[day].zh}</div>
+          </header>
+          ${periods.map(p=>{
+            const items=dayItems.filter(x=>x.period===p);
+            if(!items.length) return "";
+            return `<div class="slot ${p}">
+              <div class="slot-title">${currentLang==="th"?periodInfo[p].th:periodInfo[p].zh}</div>
+              ${items.map(courseCard).join("")}
+            </div>`;
+          }).join("")}
+          ${dayItems.length===0 ? `<div class="empty">NO CLASS</div>` : ""}
+        </section>
+      `;
+    }).join("")
+  }</div>`;
 }
-function card(item){
-  const metaTeacher = item.teacher ? `👤 ${item.teacher}` : "";
-  return `<article class="class-card">
-    <span class="badge">${currentLang==="th"?"สัปดาห์ ":"第"}${item.weeks}</span>
-    <div class="course">${item.th}</div>
-    <div class="zh">${item.zh}</div>
-    <div class="class-meta">
-      <span>⏱ ${currentLang==="th"?"คาบ ":"节次 "}${item.periods}</span>
-      ${metaTeacher ? `<span>${metaTeacher}</span>` : ""}
-      <span>⌂ ${item.room}</span>
-    </div>
-  </article>`;
+
+function renderAll(){
+  document.getElementById("weekTitle").textContent = currentLang==="th" ? `สัปดาห์ที่ ${currentWeek}` : `第 ${currentWeek} 周`;
+  document.getElementById("timelineTitle").textContent = currentLang==="th" ? `สัปดาห์ที่ ${currentWeek}` : `第 ${currentWeek} 周`;
+  renderStats();
+  renderWeeks();
+  renderSchedule();
 }
-function render(){
-  const grid=$("#scheduleGrid");
-  const days=Object.keys(dayInfo).filter(d=>selectedDay==="all"||d===selectedDay);
-  grid.innerHTML=days.map(day=>{
-    const dayItems=scheduleData.filter(x=>x.day===day && hasWeek(x,selectedWeek));
-    return `<div class="day-column">
-      <div class="day-head"><b>${dayInfo[day].th}</b><span>${dayInfo[day].zh}</span></div>
-      ${["morning","afternoon","evening"].map(period=>{
-        const items=dayItems.filter(x=>x.period===period);
-        return `<div class="period-title">${periodInfo[period].th} · ${periodInfo[period].zh}</div>
-          ${items.length ? items.map(card).join("") : `<div class="empty">${currentLang==="th"?"ไม่มีเรียน":"无课程"}</div>`}`;
-      }).join("")}
-    </div>`;
-  }).join("");
-  const note = selectedWeek==="all"
-    ? (currentLang==="th" ? "แสดงข้อมูลทั้งหมดจากตารางเรียนต้นฉบับ" : "显示原始课程表中的全部资料")
-    : (currentLang==="th" ? `กำลังดูสัปดาห์ที่ ${selectedWeek}` : `正在查看第 ${selectedWeek} 周`);
-  $("#weekNote").textContent=note;
-  renderCourses();
-}
-function renderCourses(){
-  $("#courseCount").textContent=uniqueCourses().length;
-  $("#courseList").innerHTML=uniqueCourses().map((x,i)=>`
-    <article class="course-item">
-      <span class="num">${String(i+1).padStart(2,"0")}</span>
-      <h3>${x.th}</h3>
-      <p>${x.zh}</p>
-      <span>${currentLang==="th"?"อาจารย์":"教师"}: ${x.teacher||"—"}</span>
-    </article>`).join("");
-}
-function initWeekOptions(){
-  const select=$("#weekSelect");
-  for(let i=1;i<=17;i++){
-    const opt=document.createElement("option");
-    opt.value=i; opt.textContent=currentLang==="th"?`สัปดาห์ ${i}`:`第 ${i} 周`;
-    select.appendChild(opt);
-  }
-}
-$("#weekSelect").addEventListener("change",e=>{selectedWeek=e.target.value;render()});
-$("#daySelect").addEventListener("change",e=>{selectedDay=e.target.value;render()});
-$$(".lang-btn").forEach(btn=>btn.addEventListener("click",()=>{
-  currentLang=btn.dataset.lang;
-  const selected=$("#weekSelect").value;
-  $("#weekSelect").innerHTML=`<option value="all">${i18nText("allWeeks")}</option>`;
-  initWeekOptions();
-  $("#weekSelect").value=selected;
-  applyLanguage();
-}));
-$("#imageInput").addEventListener("change",e=>{
-  const file=e.target.files[0];
-  if(!file)return;
+
+document.querySelectorAll(".lang-btn").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    currentLang=btn.dataset.lang;
+    document.querySelectorAll(".lang-btn").forEach(b=>b.classList.toggle("active",b===btn));
+    renderAll();
+  });
+});
+
+document.getElementById("imageBtn").addEventListener("click",()=>document.getElementById("imageInput").click());
+
+document.getElementById("imageInput").addEventListener("change",event=>{
+  const file=event.target.files?.[0];
+  if(!file) return;
   const reader=new FileReader();
-  reader.onload=()=>{
-    localStorage.setItem("classScheduleHero",reader.result);
-    showImage(reader.result);
+  reader.onload=e=>{
+    const hero=document.getElementById("heroVisual");
+    hero.style.backgroundImage=`linear-gradient(135deg,rgba(10,10,12,.42),rgba(10,10,12,.25)),url("${e.target.result}")`;
+    hero.style.backgroundSize="cover";
+    hero.style.backgroundPosition="center";
   };
   reader.readAsDataURL(file);
 });
-function showImage(src){
-  $("#heroImage").src=src;
-  $("#heroImage").classList.remove("hidden");
-  $("#heroPlaceholder").classList.add("hidden");
-}
-function removeImage(){
-  localStorage.removeItem("classScheduleHero");
-  $("#heroImage").src="";
-  $("#heroImage").classList.add("hidden");
-  $("#heroPlaceholder").classList.remove("hidden");
-  $("#imageInput").value="";
-}
-$("#clearImage").addEventListener("click",removeImage);
 
-const savedImage=localStorage.getItem("classScheduleHero");
-if(savedImage) showImage(savedImage);
-initWeekOptions();
-applyLanguage();
+renderAll();

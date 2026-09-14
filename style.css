@@ -179,3 +179,96 @@ footer{
   .week-tabs{grid-template-columns:repeat(17,58px)}
   footer{padding:20px 14px}
 }
+
+/* LIVE CHINA TIME + CLASS STATUS */
+.china-clock{
+  display:flex;align-items:center;gap:7px;
+  margin-left:auto;margin-right:8px;
+  color:#686b72;font:600 10px "IBM Plex Mono",monospace;
+  letter-spacing:.05em;white-space:nowrap
+}
+.china-clock svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.china-clock b{color:var(--ink);font-weight:700;margin-left:4px}
+.course-status-row{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:18px}
+.live-badge{
+  border:1px solid #e1e1e3;border-radius:999px;padding:4px 7px;
+  font:700 8px "IBM Plex Mono",monospace;letter-spacing:.03em;
+  color:#777a80;background:#f6f6f7;white-space:nowrap
+}
+.course[data-live-state="soon"], .course.is-soon{
+  border-color:rgba(215,25,63,.65);
+  box-shadow:0 0 0 1px rgba(215,25,63,.10),0 10px 25px rgba(215,25,63,.10)
+}
+.course.is-soon .live-badge{
+  color:var(--red);border-color:rgba(215,25,63,.32);background:var(--red-soft);
+  animation:statusBlink 1s steps(2,end) infinite
+}
+.course.is-soon:before{animation:barBlink 1s steps(2,end) infinite}
+.course.is-live{
+  border-color:rgba(25,151,83,.65);
+  box-shadow:0 0 0 1px rgba(25,151,83,.10),0 10px 25px rgba(25,151,83,.10)
+}
+.course.is-live:before{background:#159653 !important}
+.course.is-live .live-badge{color:#117b47;border-color:rgba(25,151,83,.3);background:#e9f8ef}
+.course.is-ended{border-color:rgba(190,45,55,.5);opacity:.78}
+.course.is-ended:before{background:#be2d37 !important}
+.course.is-ended .live-badge{color:#a5242d;border-color:rgba(190,45,55,.28);background:#fbeaec}
+.legend-dot.live{background:#159653}.legend-dot.ended{background:#be2d37}
+@keyframes statusBlink{50%{opacity:.28;transform:scale(.98)}}
+@keyframes barBlink{50%{opacity:.28}}
+@media(max-width:720px){
+  .china-clock{font-size:9px;margin-right:5px}
+  .china-clock span{display:none}
+  .china-clock svg{width:16px;height:16px}
+}
+
+/* ---------- CLEAN COURSE FOCUS / LIVE STATUS ---------- */
+/* No circular course image/icon is used. Important information is prioritized instead. */
+.course{
+  transition:border-color .25s ease, box-shadow .25s ease, opacity .25s ease, transform .25s ease;
+}
+.course-status-row{min-height:24px}
+.course-time{font-size:11px;font-weight:800;letter-spacing:-.01em}
+.live-badge{font-size:8px;font-weight:800;text-transform:uppercase}
+.live-detail{margin-top:12px}
+.live-sub{
+  display:block;color:#85888e;font:600 8px "IBM Plex Mono",monospace;
+  min-height:12px;margin-bottom:6px;letter-spacing:.02em
+}
+.course-progress{height:3px;background:#eeeeef;border-radius:99px;overflow:hidden}
+.course-progress > span{display:block;width:0;height:100%;background:var(--red);transition:width .5s linear}
+.course.is-soon{
+  border-color:rgba(215,25,63,.78)!important;
+  box-shadow:0 0 0 1px rgba(215,25,63,.12),0 10px 26px rgba(215,25,63,.13)
+}
+.course.is-soon .live-badge{animation:statusBlink .85s steps(2,end) infinite}
+.course.is-soon .course-time{animation:timeBlink .85s steps(2,end) infinite}
+.course.is-soon .course-progress > span{background:var(--red)}
+.course.is-live{
+  border-color:rgba(21,150,83,.75)!important;
+  box-shadow:0 0 0 1px rgba(21,150,83,.12),0 10px 26px rgba(21,150,83,.12)
+}
+.course.is-live:before{background:#159653!important}
+.course.is-live .course-time{color:#159653}
+.course.is-live .live-badge{color:#117b47;border-color:rgba(21,150,83,.34);background:#e9f8ef}
+.course.is-live .course-progress > span{background:#159653}
+.course.is-ended{
+  border-color:rgba(190,45,55,.55)!important;
+  box-shadow:none;
+  opacity:.82
+}
+.course.is-ended:before{background:#be2d37!important}
+.course.is-ended .course-time{color:#be2d37}
+.course.is-ended .live-badge{color:#a5242d;border-color:rgba(190,45,55,.3);background:#fbeaec}
+.course.is-ended .course-progress > span{background:#be2d37;width:100%!important}
+@keyframes statusBlink{50%{opacity:.25}}
+@keyframes timeBlink{50%{opacity:.35}}
+
+/* Replace the decorative circular target with a clean futuristic focal line. */
+.hero-visual:after{width:58%;height:1px;border:0;border-radius:0;left:21%;top:50%;transform:none;background:rgba(255,255,255,.22);box-shadow:0 -46px 0 rgba(255,255,255,.04),0 46px 0 rgba(255,255,255,.04)}
+.hero-label{right:30px;bottom:30px}
+
+@media(max-width:720px){
+  .course-time{font-size:10px}
+  .live-badge{font-size:7px}
+}

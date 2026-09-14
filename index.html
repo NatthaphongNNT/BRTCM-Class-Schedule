@@ -10,12 +10,13 @@
 <body>
   <header class="topbar">
     <div class="brand">
-      <div class="brand-mark">B</div>
+      <div class="brand-mark">Z</div>
       <div>
         <strong>ZCMU Sujaree 2026</strong>
         <span>2026 CLASS SCHEDULE</span>
       </div>
     </div>
+    <div class="china-clock" id="chinaClock" aria-label="China Standard Time"></div>
     <div class="top-actions">
       <button class="icon-btn" id="imageBtn" title="เปลี่ยนภาพหน้าปก" aria-label="เปลี่ยนภาพหน้าปก">
         <span class="icon" data-icon="image"></span>
@@ -29,7 +30,7 @@
   <main class="container">
     <section class="hero">
       <div class="hero-copy">
-        <div class="eyebrow"><span class="dot"></span> Sujaree ZCMU • 2026 / 17 WEEKS</div>
+        <div class="eyebrow"><span class="dot"></span> ZCMU SUJAREE • 2026 / 17 WEEKS</div>
         <h1>ตารางเรียน<br><em>Class Schedule</em></h1>
         <p>ดูตารางเรียนแยกตามสัปดาห์ พร้อมเวลา คาบ ห้อง และผู้สอนในหน้าเดียว</p>
       </div>
@@ -48,7 +49,7 @@
           <span class="kicker">WEEK SELECTOR</span>
           <h2 id="weekTitle">สัปดาห์ที่ 1</h2>
         </div>
-        <div class="view-note"><span class="icon" data-icon="clock"></span><span>เวลาอ้างอิงตามตารางต้นฉบับ</span></div>
+        <div class="view-note"><span class="icon" data-icon="clock"></span><span>Live status uses China Standard Time (UTC+8)</span></div>
       </div>
       <div class="week-tabs" id="weekTabs"></div>
     </section>
@@ -63,6 +64,8 @@
           <span><i class="legend-dot morning"></i>เช้า</span>
           <span><i class="legend-dot afternoon"></i>บ่าย</span>
           <span><i class="legend-dot evening"></i>เย็น</span>
+          <span><i class="legend-dot live"></i>กำลังเรียน</span>
+          <span><i class="legend-dot ended"></i>เรียนจบแล้ว</span>
         </div>
       </div>
       <div id="scheduleRoot"></div>
@@ -70,7 +73,7 @@
   </main>
 
   <footer>
-    <span>Sujaree ZCMU 2026</span>
+    <span>ZCMU SUJAREE 2026</span>
     <span>Academic Schedule Interface</span>
   </footer>
 
